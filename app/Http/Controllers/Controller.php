@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use PHPHtmlParser\Dom;
 use Illuminate\Http\Request;
 use Laravel\Lumen\Routing\Controller as BaseController;
@@ -13,7 +14,8 @@ class Controller extends BaseController
         if (!$file) {
             return response(['status'=>false], 404);
         }
-        $filePath = base_path('import/'.$file);
+
+        $filePath = getenv('FOLDER_FILE').DIRECTORY_SEPARATOR.$file;
         if (!file_exists($filePath)) {
             return response(['status'=>false], 404);
         }
@@ -27,11 +29,14 @@ class Controller extends BaseController
                     $num = count($data);
                     if ($row > 1) {
                         $values = [];
-                        for ($c=0; $c < $num; $c++) {
-                            $col = $colums[$c];
-                            $values[$col] = $data[$c];
-                            $array[] = $values;
+                        foreach($colums as $i => $col) {
+                            $val = null;
+                            if (isset($data[$i])) {
+                                $val = $data[$i];
+                            }
+                            $values[$col] = $val;
                         }
+                        $array[] = $values;
                     }
                     else {
                         for ($c=0; $c < $num; $c++) {
@@ -65,12 +70,17 @@ class Controller extends BaseController
                     $cols = $row->find('td');
                     $value = [];
                     foreach($cols as $i => $col) {
-                        $value[$column[$i]] = $col->text;
+                        $val = $col->text;
+                        if ($column[$i] == 'Date') {
+                            $date = Carbon::createFromFormat('d/m/Y H:i:s', $val);
+                            $val = $date->format('Y-m-d H:i:s');
+                        }
+                        $value[$column[$i]] = $val;
                     }
                     $array[] = $value;
                 }
             }
         }
-        return response(['status'=>true, 'data' => $array]);
+        return response($array);
     }
 }
