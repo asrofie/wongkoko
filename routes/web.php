@@ -22,6 +22,31 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
+$router->get('/api', function () use ($router) {
+    $docs = [
+        'auth' => 'adding query string apiKey in the URL',
+        'API' => [
+            '/' => [
+                'desc'=>'Api documentation',
+                'method' => 'GET'
+            ],
+            '/api/file-list'=> [
+                'desc' =>'Get list file',
+                'method' => 'GET'
+            ],
+            '/api/data' => [
+                'desc' => 'Get content file',
+                'method' => 'GET',
+                'query' => [
+                    'file' => 'File name from api file list'
+                ]
+            ],
+        'version' => date('Ymd')
+        ]
+    ];
+    return response($docs);
+});
+
 $router->get('/api/file-list', ['middleware' => 'auth', function(Request $request) {
     $path = getenv('FOLDER_FILE');
     $files = array_diff(scandir($path), array('.', '..'));
