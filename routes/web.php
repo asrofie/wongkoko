@@ -21,7 +21,7 @@ use Illuminate\Http\Request;
 $router->get('/', function () use ($router) {
     return $router->app->version();
 });
-$router->get('/api/data',  function(Request $request) {
+$router->get('/api/data', ['middleware' => 'auth', function(Request $request) {
     $file = $request->get('file');
     if (!$file) {
         return response(['status'=>false], 404);
@@ -107,4 +107,4 @@ $router->get('/api/data',  function(Request $request) {
         }
     }
     return response($array);
-});
+}]);
