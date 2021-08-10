@@ -21,6 +21,17 @@ use Illuminate\Http\Request;
 $router->get('/', function () use ($router) {
     return $router->app->version();
 });
+
+$router->get('/api/file-list', ['middleware' => 'auth', function(Request $request) {
+    $path = getenv('FOLDER_FILE');
+    $files = array_diff(scandir($path), array('.', '..'));
+    $res = [];
+    foreach($files as $file) {
+        $res[] = $file;
+    }
+    return response(['data' => $res]);
+}]);
+
 $router->get('/api/data', ['middleware' => 'auth', function(Request $request) {
     $file = $request->get('file');
     if (!$file) {
