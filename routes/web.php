@@ -106,5 +106,5 @@ $router->get('/api/data', ['middleware' => 'auth', function(Request $request) {
             }
         }
     }
-    return response($array);
+    return response(['modified_at' => date ("Y-m-d H:i:s", filemtime($filePath)), 'data' => $array]);
 }]);
