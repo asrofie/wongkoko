@@ -118,6 +118,11 @@ $router->get('/api/data', ['middleware' => 'auth', function(Request $request) {
                 $cols = $row->find('td');
                 $value = [];
                 foreach($cols as $i => $col) {
+                    if(!$col->getChildren()) {
+                        $val = null;
+                        $value[$column[$i]] = $val;
+                        continue;
+                    }
                     $val = $col->text;
                     if ($val == '') {
                         $font = $col->find('font');
@@ -142,5 +147,8 @@ $router->get('/api/data', ['middleware' => 'auth', function(Request $request) {
             }
         }
     }
-    return response(['modified_at' => date ("Y-m-d H:i:s", filemtime($filePath)), 'data' => $array]);
+    $date = Carbon::parse(filemtime($filePath));
+    $timezone = "asia/jakarta";
+    $date->timezone($timezone);
+    return response(['modified_at' => $date->format("Y-m-d H:i:s"), 'data' => $array]);
 }]);
