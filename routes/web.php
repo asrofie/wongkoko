@@ -83,6 +83,13 @@ $router->get('/api/data',  function(Request $request) {
                 $value = [];
                 foreach($cols as $i => $col) {
                     $val = $col->text;
+                    if ($val == '') {
+                        $font = $col->find('font');
+                        if ($font) {
+                            $val = $font->text;
+                        }
+                    }
+                    
                     if ($val && $column[$i] == 'Date') {
                         try {
                             $date = Carbon::parse($val);
